@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-ID Identity Service Portal (Govt. Demo)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        /* Dropdown menu functionality */
+        .dropdown-menu { display: none; }
+        .dropdown:hover .dropdown-menu { display: block; }
+        
+        /* Carousel functionality */
+        .carousel-item { display: none; }
+        .carousel-item.active { display: block; }
+        
+        /* Marquee animation */
+        .marquee-content {
+            display: flex;
+            animation: marquee 30s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+        
+        /* Page View Styles */
+        .page-view {
+            display: none; /* All pages hidden by default */
+        }
+        .page-view.active {
+            display: block; /* Show the active page */
+        }
+        
+        /* CAPTCHA Text Style */
+        .captcha-text {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100'%3E%3Cfilter id='f1' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.1' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f1)' opacity='0.2'/%3E%3C/svg%3E");
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            text-align: center;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #d1d5db;
+            color: #1e3a8a;
+            user-select: none;
+        }
+    </style>
+</head>
+
+<body class="text-gray-800">
+
+    <!-- =========== HOME VIEW =========== -->
+    <div id="homeView" class="page-view active">
+        <!-- Top Utility Bar -->
+        <div class="bg-white text-xs text-gray-600">
+            <div class="container mx-auto max-w-7xl px-4 py-1 flex justify-end items-center space-x-4">
+                <a href="#" class="hover:underline">Main Content</a>
+                <a href="#" class="hover:underline">Screen Reader</a>
+                <a href="#" class="hover:underline">English</a>
+            </div>
+        </div>
+
+        <!-- Header / Logo Bar -->
+        <header class="bg-white shadow-md">
+            <div class="container mx-auto max-w-7xl px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <svg class="h-12 w-12 text-blue-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" /></svg>
+                    <div>
+                        <h1 class="font-bold text-lg text-blue-800">Identity Authority of Nation</h1>
+                        <p class="text-sm text-gray-500">Government of Nation</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <svg class="h-16 w-16 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.333 9-6.03 9-11.623 0-1.604-.368-3.14-.992-4.501M12 2.25A11.959 11.959 0 0 0 3.598 6M12 2.25a11.959 11.959 0 0 1 8.402 3.75" /></svg>
+                    <h2 class="text-2xl font-bold text-red-700">E-ID</h2>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Navigation Bar -->
+        <nav class="bg-blue-800 text-white shadow-lg">
+            <div class="container mx-auto max-w-7xl px-4 flex justify-between items-center">
+                <div class="flex space-x-1">
+                    <!-- Dropdown: My E-ID -->
+                    <div class="relative dropdown">
+                        <button class="px-4 py-3 hover:bg-blue-700 transition-colors flex items-center space-x-1">
+                            <span>My E-ID</span>
+                            <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+                        </button>
+                        <div class="dropdown-menu absolute bg-white text-gray-700 shadow-lg rounded-md mt-0 py-2 z-20 w-48">
+                            <button id="navRegister" class="w-full text-left block px-4 py-2 text-sm hover:bg-gray-100">Register for E-ID</button>
+                            <button id="navSearch" class="w-full text-left block px-4 py-2 text-sm hover:bg-gray-100">Search for E-ID</button>
+                            <button id="navUpdate" class="w-full text-left block px-4 py-2 text-sm hover:bg-gray-100">Update E-ID Info</button>
+                            <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">Check E-ID Status</a>
+                        </div>
+                    </div>
+                    <!-- Other Dropdowns... -->
+                    <div class="relative dropdown">
+                        <button class="px-4 py-3 hover:bg-blue-700 transition-colors flex items-center space-x-1">
+                            <span>About E-ID</span>
+                            <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+                        </button>
+                        <div class="dropdown-menu absolute bg-white text-gray-700 shadow-lg rounded-md mt-0 py-2 z-20">
+                            <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">What is E-ID?</a>
+                            <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">Features & Benefits</a>
+                        </div>
+                    </div>
+                    <div class="relative dropdown">
+                        <button class="px-4 py-3 hover:bg-blue-700 transition-colors flex items-center space-x-1">
+                            <span>Media & Resources</span>
+                            <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+                        </button>
+                        <div class="dropdown-menu absolute bg-white text-gray-700 shadow-lg rounded-md mt-0 py-2 z-20">
+                            <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">Forms</a>
+                            <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">FAQs</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Search Bar -->
+                <div class="relative">
+                    <input type="text" placeholder="Search..." class="px-3 py-1.5 rounded-md text-sm text-gray-700 focus:outline-none">
+                    <button class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500">
+                        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Homepage Content -->
+        <div class="container mx-auto max-w-7xl px-4 mt-4">
+            <!-- Slideshow / Carousel -->
+            <div class="relative h-64 md:h-80 w-full overflow-hidden rounded-lg shadow-lg">
+                <div class="carousel-item active" style="background: linear-gradient(to right, #1d4ed8, #2563eb);">
+                    <div class="h-full flex items-center justify-center text-white p-8 text-center">
+                        <div>
+                            <h2 class="text-4xl font-bold">E-ID Mascot Competition</h2>
+                            <p class="text-xl mt-2">Submit Your Creative Masterpiece Now!</p>
+                            <p class="mt-4 bg-white text-blue-800 font-bold py-2 px-4 rounded-full inline-block">Last date of submission: 31st Oct 2025</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item" style="background: linear-gradient(to right, #059669, #10b981);">
+                    <div class="h-full flex items-center justify-center text-white p-8 text-center">
+                        <div>
+                            <h2 class="text-4xl font-bold">Link Your E-ID Today!</h2>
+                            <p class="text-xl mt-2">Secure all your government services in one place.</p>
+                            <button class="mt-4 bg-white text-green-700 font-bold py-2 px-4 rounded-full">Learn More</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Links Bar -->
+            <div class="mt-4 w-full overflow-hidden bg-white rounded-lg shadow">
+                <div class="marquee-content py-2">
+                    <span class="flex-shrink-0 px-6 text-sm font-medium text-blue-700">Aadhaar Seva Kendra</span>
+                    <span class="flex-shrink-0 px-6 text-sm font-medium text-red-600">Enrolment & Update Charges</span>
+                    <span class="flex-shrink-0 px-6 text-sm font-medium text-blue-700">List of Acceptable Documents</span>
+                    <span class="flex-shrink-0 px-6 text-sm font-medium text-blue-700">Feedback</span>
+                    <span class="flex-shrink-0 px-6 text-sm font-medium text-blue-700">RTI</span>
+                    <!-- Duplicates for seamless loop -->
+                    <span class="flex-shrink-0 px-6 text-sm font-medium text-blue-700">Aadhaar Seva Kendra</span>
+                    <span class="flex-shrink-0 px-6 text-sm font-medium text-red-600">Enrolment & Update Charges</span>
+                    <span class="flex-shrink-0 px-6 text-sm font-medium text-blue-700">List of Acceptable Documents</span>
+                    <span class="flex-shrink-0 px-6 text-sm font-medium text-blue-700">Feedback</span>
+                    <span class="flex-shrink-0 px-6 text-sm font-medium text-blue-700">RTI</span>
+                </div>
+            </div>
+
+            <!-- Main Page Content Grid -->
+            <main class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="md:col-span-2 bg-white p-6 rounded-lg shadow">
+                    <h3 class="text-2xl font-bold text-blue-800 mb-4">News & Updates</h3>
+                    <ul class="space-y-3">
+                        <li class="border-b pb-2"><a href="#" class="hover:underline">Waiver on charges for MBU-1 of children aged 7-15.</a> <span class="text-red-500 text-xs font-bold ml-2">NEW</span></li>
+                        <li class="border-b pb-2"><a href="#" class="hover:underline">Notification on E-ID Authentication for Good Governance.</a></li>
+                        <li class="border-b pb-2"><a href="#" class="hover:underline">Press Release: E-ID usage surges in 2024.</a></li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow space-y-4">
+                    <h3 class="text-2xl font-bold text-blue-800">Key Services</h3>
+                    <button id="mainRegisterButton" class="w-full text-center py-3 px-4 rounded-md shadow-lg font-medium text-white bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 transition-all duration-200 transform hover:scale-105">
+                        Register for E-ID
+                    </button>
+                    <button id="mainUpdateButton" class="w-full text-center py-3 px-4 rounded-md shadow-lg font-medium text-white bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 transition-all duration-200 transform hover:scale-105">
+                        Update E-ID Info
+                    </button>
+                    <a href="#" class="block text-center hover:underline text-blue-700">Where is my nearest center?</a>
+                </div>
+            </main>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-gray-800 text-gray-400 mt-12 py-10">
+            <div class="container mx-auto max-w-7xl px-4 grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div>
+                    <h5 class="font-bold text-white mb-3">Quick Links</h5>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white">RTI</a></li>
+                        <li><a href="#" class="hover:text-white">Circulars</a></li>
+                        <li><a href="#" class="hover:text-white">Tenders</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold text-white mb-3">Policies</h5>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white">Terms & Conditions</a></li>
+                        <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold text-white mb-3">Contact Us</h5>
+                    <ul class="space-y-2 text-sm">
+                        <li>Toll Free: 1800-000-000</li>
+                        <li>Email: help@eid.gov.in</li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold text-white mb-3">Follow Us</h5>
+                    <div class="flex space-x-4">
+                        <a href="#" class="hover:text-white">
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22.46,6C21.69,6.35 20.86,6.58 20,6.69C20.88,6.16 21.56,5.32 21.88,4.31C21.05,4.81 20.13,5.16 19.16,5.36C18.37,4.5 17.26,4 16,4C13.65,4 11.73,5.92 11.73,8.26C11.73,8.6 11.77,8.92 11.84,9.22C8.28,9.04 5.1,7.38 2.9,4.79C2.53,5.42 2.33,6.15 2.33,6.94C2.33,8.43 3.08,9.77 4.18,10.59C3.49,10.57 2.82,10.39 2.22,10.13V10.2C2.22,12.28 3.63,14.04 5.6,14.45C5.25,14.54 4.88,14.6 4.5,14.6C4.22,14.6 3.95,14.57 3.69,14.52C4.22,16.2 5.73,17.45 7.55,17.49C6.15,18.59 4.4,19.25 2.5,19.25C2.17,19.25 1.84,19.23 1.5,19.19C3.36,20.44 5.5,21.19 7.79,21.19C16.02,21.19 20.28,14.42 20.28,8.81C20.28,8.59 20.27,8.37 20.26,8.15C21.11,7.5 21.85,6.79 22.46,6Z" /></svg>
+                        </a>
+                        <a href="#" class="hover:text-white">
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12,2.04C6.5,2.04 2,6.54 2,12.04C2,17.04 5.67,21.21 10.44,21.9V14.89H7.9V12.04H10.44V9.8C10.44,7.3 11.9,5.96 14.22,5.96C15.31,5.96 16.22,6.05 16.5,6.09V8.6H15.19C13.95,8.6 13.56,9.39 13.56,10.18V12.04H16.34L15.89,14.89H13.56V21.9C18.33,21.21 22,17.04 22,12.04C22,6.54 17.5,2.04 12,2.04Z" /></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 border-t border-gray-700 pt-6 text-center text-sm">
+                <p>&copy; 2025 Identity Authority of Nation. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- =========== REGISTER VIEW =========== -->
+    <div id="registerView" class="page-view min-h-screen bg-gray-100 py-12 px-4">
+        <div class="container mx-auto max-w-xl">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <svg class="mx-auto h-12 w-auto text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
+                <h2 class="mt-4 text-3xl font-bold tracking-tight text-gray-900">
+                    Register for E-ID
+                </h2>
+                <p class="mt-2 text-sm text-gray-600">
+                    Fill in your details to generate a new electronic identity card.
+                </p>
+                <button class="navHome text-sm text-blue-600 hover:underline mt-2">&larr; Back to Home</button>
+            </div>
+
+            <!-- Registration Form -->
+            <form id="registerForm" class="bg-white p-8 rounded-2xl shadow-lg space-y-6">
+                <div>
+                    <label for="reg-name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                    <input id="reg-name" type="text" required class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="reg-dob" class="block text-sm font-medium text-gray-700">Date of Birth</label>
+                    <input id="reg-dob" type="date" required class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="reg-gender" class="block text-sm font-medium text-gray-700">Gender</label>
+                    <select id="reg-gender" required class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="reg-phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
+                    <input id="reg-phone" type="tel" required class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="+91 XXXXX XXXXX">
+                </div>
+                <div>
+                    <label for="reg-address" class="block text-sm font-medium text-gray-700">Full Address</label>
+                    <textarea id="reg-address" rows="3" required class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+                
+                <button id="registerButton" type="submit"
+                        class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-lg text-sm font-medium text-white bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 transform hover:scale-105">
+                    Proceed to Security Check
+                </button>
+                
+                <!-- Registration Error/Success Boxes -->
+                <div id="registerErrorBox" class="hidden mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                    <p class="font-medium">Error!</p>
+                    <p id="registerErrorMessage" class="text-sm">Something went wrong.</p>
+                </div>
+                <div id="registerSuccessBox" class="hidden mt-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+                    <p class="font-medium">Registration Successful!</p>
+                    <p class="text-sm">Your new E-ID Number is: <strong id="newEIdNumber" class="text-lg"></strong></p>
+                    <p class="text-sm mt-2">You can now search for this E-ID.</p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- =========== SEARCH VIEW =========== -->
+    <div id="searchView" class="page-view min-h-screen bg-gray-100 py-12 px-4">
+        <div class="container mx-auto max-w-xl">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <svg class="mx-auto h-12 w-auto text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+                <h2 class="mt-4 text-3xl font-bold tracking-tight text-gray-900">
+                    Search for E-ID
+                </h2>
+                <p class="mt-2 text-sm text-gray-600">
+                    Enter your 12-digit E-ID to retrieve your details.
+                </p>
+                <button class="navHome text-sm text-blue-600 hover:underline mt-2">&larr; Back to Home</button>
+            </div>
+
+            <!-- Search Form -->
+            <div class="bg-white p-8 rounded-2xl shadow-lg space-y-6">
+                <div class="space-y-4">
+                    <div>
+                        <label for="eid-number-search" class="block text-sm font-medium text-gray-700">
+                            Enter your 12-Digit E-ID Number
+                        </label>
+                        <div class="mt-1">
+                            <input id="eid-number-search" name="eid-number" type="text"
+                                class="block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="XXXX XXXX XXXX"
+                                maxlength="12">
+                        </div>
+                    </div>
+                    
+                    <button id="searchButton"
+                            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-lg text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105">
+                        Search Record
+                    </button>
+
+                    <!-- ---*** THIS IS THE UI FIX ***--- -->
+                    <!-- Download Button is now here, and disabled by default -->
+                    <button id="downloadButton"
+                            class="w-full flex justify-center py-3 px-4 mt-4 border border-transparent rounded-md shadow-lg text-sm font-medium text-white bg-gradient-to-r from-teal-500 to-green-600 hover:from-teal-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-all duration-200 transform hover:scale-105 opacity-50 cursor-not-allowed"
+                            disabled>
+                        Download E-ID (.txt)
+                    </button>
+                    <!-- ---*** END OF UI FIX ***--- -->
+
+                </div>
+                
+                <!-- Search Error Message Box -->
+                <div id="searchErrorBox" class="hidden mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                    <p class="font-medium">Error!</p>
+                    <p id="searchErrorMessage" class="text-sm">No record found.</p>
+                </div>
+
+                <!-- Search Results Card -->
+                <div id="resultsCard" class="hidden pt-6 space-y-4 border-t border-gray-200 mt-6">
+                    <h3 class="text-lg font-semibold text-gray-900">Identity Details</h3>
+                    <p class="text-sm text-gray-500">For security, only non-sensitive information is displayed.</p>
+                    <div class="space-y-3">
+                        
+                        <!-- 
+                          ---*** THIS IS THE SECURITY FIX ***---
+                          We no longer display PII here.
+                        -->
+                        <div class="flex justify-between">
+                            <span class="text-sm font-medium text-gray-500">Name:</span>
+                            <span id="res-name" class="text-sm font-semibold text-gray-900">**********</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm font-medium text-gray-500">Date of Birth:</span>
+                            <span id="res-dob" class="text-sm font-semibold text-gray-900">**********</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm font-medium text-gray-500">Gender:</span>
+                            <span id="res-gender" class="text-sm font-semibold text-gray-900">******</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm font-medium text-gray-500">Phone:</span>
+                            <span id="res-phone" class="text-sm font-semibold text-gray-900">**********</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm font-medium text-gray-500">Address:</span>
+                            <span id="res-address" class="text-sm font-semibold text-gray-900 text-right w-1/2">********************</span>
+                        </div>
+                        <!-- END OF SECURITY FIX -->
+
+                        <div class="flex justify-between">
+                            <span class="text-sm font-medium text-gray-500">E-ID Number:</span>
+                            <span id="res-eid" class="text-sm font-semibold text-gray-900"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm font-medium text-gray-500">Issued On:</span>
+                            <span id="res-issued" class="text-sm font-semibold text-gray-900"></span>
+                        </div>
+                    </div>
+
+                    <!-- Download Button was here, but has been MOVED UP -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- =========== UPDATE VIEW =========== -->
+    <div id="updateView" class="page-view min-h-screen bg-gray-100 py-12 px-4">
+        <div class="container mx-auto max-w-xl">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <svg class="mx-auto h-12 w-auto text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
+                <h2 class="mt-4 text-3xl font-bold tracking-tight text-gray-900">
+                    Update E-ID Information
+                </h2>
+                <p class="mt-2 text-sm text-gray-600">
+                    Find your record and update your details.
+                </p>
+                <button class="navHome text-sm text-blue-600 hover:underline mt-2">&larr; Back to Home</button>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl shadow-lg space-y-6">
+                <!-- Step 1: Login / Find User -->
+                <div id="updateStep1" class="space-y-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Step 1: Find Your Record</h3>
+                    <div>
+                        <label for="eid-number-update" class="block text-sm font-medium text-gray-700">
+                            Enter your 12-Digit E-ID Number
+                        </label>
+                        <div class="mt-1">
+                            <input id="eid-number-update" type="text"
+                                class="block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="XXXX XXXX XXXX"
+                                maxlength="12">
+                        </div>
+                    </div>
+                    <button id="findUserButton"
+                            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-all duration-200 transform hover:scale-105">
+                        Find My E-ID
+                    </button>
+                    <div id="updateFindErrorBox" class="hidden mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                        <p class="font-medium">Error!</p>
+                        <p id="updateFindErrorMessage" class="text-sm">No record found.</p>
+                    </div>
+                </div>
+
+                <!-- Step 2: Edit Form (Hidden by default) -->
+                <form id="updateStep2" class="hidden space-y-6">
+                    <h3 class="text-lg font-semibold text-gray-900">Step 2: Edit Your Details</h3>
+                    <p class="text-sm text-gray-500">Click "Edit" to change a field. Only one field can be edited at a time.</p>
+                    
+                    <!-- Name Field -->
+                    <div class="space-y-1">
+                        <label class="block text-sm font-medium text-gray-700">Full Name</label>
+                        <div class="flex items-center space-x-2">
+                            <input id="update-name" type="text" class="flex-1 block w-full px-4 py-3 bg-gray-200 border border-gray-300 rounded-md shadow-sm" readonly>
+                            <button type="button" class="edit-btn p-2 bg-gray-200 hover:bg-gray-300 rounded-md" data-field="update-name">Edit</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Phone Field -->
+                    <div class="space-y-1">
+                        <label class="block text-sm font-medium text-gray-700">Phone Number</label>
+                        <div class="flex items-center space-x-2">
+                            <input id="update-phone" type="tel" class="flex-1 block w-full px-4 py-3 bg-gray-200 border border-gray-300 rounded-md shadow-sm" readonly>
+                            <button type="button" class="edit-btn p-2 bg-gray-200 hover:bg-gray-300 rounded-md" data-field="update-phone">Edit</button>
+                        </div>
+                    </div>
+
+                    <!-- Address Field -->
+                    <div class="space-y-1">
+                        <label class="block text-sm font-medium text-gray-700">Full Address</label>
+                        <div class="flex items-center space-x-2">
+                            <textarea id="update-address" rows="3" class="flex-1 block w-full px-4 py-3 bg-gray-200 border border-gray-300 rounded-md shadow-sm" readonly></textarea>
+                            <button type="button" class="edit-btn p-2 bg-gray-200 hover:bg-gray-300 rounded-md" data-field="update-address">Edit</button>
+                        </div>
+                    </div>
+                    
+                    <button id="updateSaveChangesButton" type="submit"
+                            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-lg text-sm font-medium text-white bg-green-600 hover:bg-green-700 transition-all duration-200 transform hover:scale-105" disabled>
+                        Save Changes (Proceed to Security Check)
+                    </button>
+                    
+                    <!-- Update Error/Success Boxes -->
+                    <div id="updateErrorBox" class="hidden mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                        <p class="font-medium">Error!</p>
+                        <p id="updateErrorMessage" class="text-sm">Something went wrong.</p>
+                    </div>
+                    <div id="updateSuccessBox" class="hidden mt-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+                        <p class="font-medium">Update Successful!</p>
+                        <p class="text-sm">Your information has been updated.</p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========== CAPTCHA VIEW (FOR ALL ACTIONS) =========== -->
+    <div id="captchaView" class="page-view min-h-screen bg-gray-100 py-12 px-4">
+        <div class="container mx-auto max-w-md">
+            <div class="bg-white p-8 rounded-2xl shadow-lg space-y-6 text-center">
+                <h2 class="text-2xl font-bold text-gray-900">Security Check</h2>
+                <p id="captchaReason" class="text-sm text-gray-600">To prevent automated requests, please type the characters you see below.</p>
+                
+                <div id="captchaText" class="captcha-text mx-auto w-full max-w-xs"></div>
+                <button id="refreshCaptcha" class="text-sm text-blue-600 hover:underline">Get a new code</button>
+                
+                <div>
+                    <label for="captchaInput" class="block text-sm font-medium text-gray-700">Enter CAPTCHA</label>
+                    <input id="captchaInput" type="text" class="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" maxlength="6">
+                </div>
+                
+                <div id="captchaError" class="hidden p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+                    Incorrect CAPTCHA. Please try again.
+                </div>
+                
+                <button id="verifyCaptchaButton" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Verify
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // --- THIS IS THE FIX ---
+        // We wrap ALL JavaScript code in this "wait" function
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- API Configuration ---
+            const API_URL = 'https://eid-project.onrender.com/api';
+            
+            // --- Global State ---
+            let currentCaptcha = '';
+            let currentAction = null; // 'register', 'download', 'update'
+            
+            // Data payloads
+            let pendingRegistrationData = null;
+            let pendingDownloadData = null;
+            let pendingUpdateData = null;
+            let currentUpdateEId = null; // Stores the EID of the user being updated
+
+            // --- Page View Elements ---
+            const homeView = document.getElementById('homeView');
+            const registerView = document.getElementById('registerView');
+            const searchView = document.getElementById('searchView');
+            const updateView = document.getElementById('updateView');
+            const captchaView = document.getElementById('captchaView');
+            const allViews = [homeView, registerView, searchView, updateView, captchaView];
+
+            // --- Navigation Elements ---
+            const navRegister = document.getElementById('navRegister');
+            const navSearch = document.getElementById('navSearch');
+            const navUpdate = document.getElementById('navUpdate');
+            const mainRegisterButton = document.getElementById('mainRegisterButton');
+            const mainUpdateButton = document.getElementById('mainUpdateButton');
+            const navHomeButtons = document.querySelectorAll('.navHome');
+
+            // --- Register View Elements ---
+            const registerForm = document.getElementById('registerForm');
+            const registerErrorBox = document.getElementById('registerErrorBox');
+            const registerErrorMessage = document.getElementById('registerErrorMessage');
+            const registerSuccessBox = document.getElementById('registerSuccessBox');
+            const newEIdNumber = document.getElementById('newEIdNumber');
+
+            // --- Search View Elements ---
+            const searchInput = document.getElementById('eid-number-search');
+            const searchButton = document.getElementById('searchButton');
+            const searchErrorBox = document.getElementById('searchErrorBox');
+            const searchErrorMessage = document.getElementById('searchErrorMessage');
+            const resultsCard = document.getElementById('resultsCard');
+            const downloadButton = document.getElementById('downloadButton');
+            // (result spans)
+            const resName = document.getElementById('res-name');
+            const resDob = document.getElementById('res-dob');
+            const resGender = document.getElementById('res-gender');
+            const resPhone = document.getElementById('res-phone');
+            const resAddress = document.getElementById('res-address');
+            const resEid = document.getElementById('res-eid');
+            const resIssued = document.getElementById('res-issued');
+            
+            // --- Update View Elements ---
+            const updateStep1 = document.getElementById('updateStep1');
+            const updateStep2 = document.getElementById('updateStep2');
+            const findUserButton = document.getElementById('findUserButton');
+            const updateFindErrorBox = document.getElementById('updateFindErrorBox');
+            const updateFindErrorMessage = document.getElementById('updateFindErrorMessage');
+            const updateErrorBox = document.getElementById('updateErrorBox');
+            const updateErrorMessage = document.getElementById('updateErrorMessage');
+            const updateSuccessBox = document.getElementById('updateSuccessBox');
+            const updateForm = document.getElementById('updateStep2');
+            const updateSaveChangesButton = document.getElementById('updateSaveChangesButton');
+
+            // --- CAPTCHA View Elements ---
+            const captchaText = document.getElementById('captchaText');
+            const refreshCaptcha = document.getElementById('refreshCaptcha');
+            const captchaInput = document.getElementById('captchaInput');
+            const captchaError = document.getElementById('captchaError');
+            const verifyCaptchaButton = document.getElementById('verifyCaptchaButton');
+            const captchaReason = document.getElementById('captchaReason');
+
+            // --- Carousel Logic ---
+            let currentSlide = 0;
+            const slides = document.querySelectorAll('.carousel-item');
+            if (slides.length > 0) {
+                slides[0].classList.add('active');
+                setInterval(() => {
+                    slides[currentSlide].classList.remove('active');
+                    currentSlide = (currentSlide + 1) % slides.length;
+                    slides[currentSlide].classList.add('active');
+                }, 5000);
+            }
+
+            // --- Utility Functions ---
+            function showView(viewId) {
+                allViews.forEach(view => {
+                    if (view) {
+                        view.classList.toggle('active', view.id === viewId);
+                    }
+                });
+                window.scrollTo(0, 0);
+            }
+
+            function generateCaptcha() {
+                const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+                let result = '';
+                for (let i = 0; i < 6; i++) {
+                    result += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                return result;
+            }
+
+            function renderCaptcha(reason = "For security, please type the code.") {
+                currentCaptcha = generateCaptcha();
+                if (captchaText) captchaText.textContent = currentCaptcha;
+                if (captchaReason) captchaReason.textContent = reason;
+                if (captchaError) captchaError.classList.add('hidden');
+                if (captchaInput) captchaInput.value = '';
+            }
+            
+            // --- Event Handlers ---
+            function handleRegisterSubmit(event) {
+                event.preventDefault();
+                if (registerErrorBox) registerErrorBox.classList.add('hidden');
+                if (registerSuccessBox) registerSuccessBox.classList.add('hidden');
+
+                const name = document.getElementById('reg-name').value;
+                const dob = document.getElementById('reg-dob').value;
+                const gender = document.getElementById('reg-gender').value;
+                const phone = document.getElementById('reg-phone').value;
+                const address = document.getElementById('reg-address').value;
+
+                if (!name || !dob || !gender || !phone || !address) {
+                    if (registerErrorMessage) registerErrorMessage.textContent = "All fields are required.";
+                    if (registerErrorBox) registerErrorBox.classList.remove('hidden');
+                    return;
+                }
+
+                pendingRegistrationData = { name, dob, gender, phone, address };
+                currentAction = 'register';
+                renderCaptcha("To complete your registration, please type the code.");
+                showView('captchaView');
+            }
+
+            async function handleSearch() {
+                if (!searchInput || !searchErrorMessage || !searchErrorBox || !resultsCard || !searchButton || !downloadButton) return;
+
+                // ---*** FIX: Reset button on new search ***---
+                downloadButton.disabled = true;
+                downloadButton.classList.add('opacity-50', 'cursor-not-allowed');
+                resultsCard.classList.add('hidden');
+                searchErrorBox.classList.add('hidden');
+                // ---*** END OF FIX ***---
+
+                const eIdToFind = searchInput.value.trim();
+                if (eIdToFind.length !== 12 || !/^\d+$/.test(eIdToFind)) {
+                    searchErrorMessage.textContent = 'Please enter a valid 12-digit E-ID number.';
+                    searchErrorBox.classList.remove('hidden');
+                    return;
+                }
+
+                searchButton.disabled = true;
+                searchButton.textContent = 'Searching...';
+
+                try {
+                    const response = await fetch(`${API_URL}/search/${eIdToFind}`);
+                    const result = await response.json();
+                    if (!response.ok) throw new Error(result.message || 'No record found.');
+
+                    const user = result;
+                    pendingDownloadData = user; // Save data for download
+
+                    // ---*** THIS IS THE SECURITY FIX ***---
+                    if (resName) resName.textContent = user.name.substring(0, 1) + "**********";
+                    if (resDob) resDob.textContent = "**********";
+                    if (resGender) resGender.textContent = "******";
+                    if (resPhone) resPhone.textContent = "**********" + user.phone.substring(user.phone.length - 2);
+                    if (resAddress) resAddress.textContent = "********************";
+                    // ---*** END OF FIX ***---
+                    
+                    if (resEid) resEid.textContent = user.eId;
+                    if (resIssued) resIssued.textContent = new Date(user.issued).toLocaleDateString('en-CA');
+                    
+                    resultsCard.classList.remove('hidden');
+                    
+                    // ---*** FIX: Enable download button on success ***---
+                    downloadButton.disabled = false;
+                    downloadButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                    // ---*** END OF FIX ***---
+
+                } catch (error) {
+                    searchErrorMessage.textContent = error.message;
+                    searchErrorBox.classList.remove('hidden');
+                    pendingDownloadData = null;
+                } finally {
+                    searchButton.disabled = false;
+                    searchButton.textContent = 'Search Record';
+                }
+            }
+            
+            function handleDownloadClick() {
+                if (!pendingDownloadData) {
+                    if(searchErrorMessage) searchErrorMessage.textContent = "Please search for a user first.";
+                    if(searchErrorBox) searchErrorBox.classList.remove('hidden');
+                    return;
+                }
+                currentAction = 'download';
+                renderCaptcha("To start your download, please type the code.");
+                showView('captchaView');
+            }
+
+            async function handleFindUserForUpdate() {
+                const eIdInput = document.getElementById('eid-number-update');
+                if (!eIdInput) return;
+                
+                const eIdToFind = eIdInput.value.trim();
+                if (eIdToFind.length !== 12 || !/^\d+$/.test(eIdToFind)) {
+                    if(updateFindErrorMessage) updateFindErrorMessage.textContent = 'Please enter a valid 12-digit E-ID number.';
+                    if(updateFindErrorBox) updateFindErrorBox.classList.remove('hidden');
+                    return;
+                }
+
+                if(findUserButton) findUserButton.disabled = true;
+                if(updateFindErrorBox) updateFindErrorBox.classList.add('hidden');
+
+                try {
+                    const response = await fetch(`${API_URL}/search/${eIdToFind}`);
+                    const user = await response.json();
+                    if (!response.ok) throw new Error(user.message || 'User not found');
+                    
+                    currentUpdateEId = user.eId;
+                    // Store original values for comparison
+                    const nameInput = document.getElementById('update-name');
+                    const phoneInput = document.getElementById('update-phone');
+                    const addressInput = document.getElementById('update-address');
+                    
+                    nameInput.value = user.name;
+                    nameInput.defaultValue = user.name;
+                    phoneInput.value = user.phone;
+                    phoneInput.defaultValue = user.phone;
+                    addressInput.value = user.address;
+                    addressInput.defaultValue = user.address;
+                    
+                    // Reset all fields to readonly
+                    document.querySelectorAll('.edit-btn').forEach(b => {
+                        const fId = b.dataset.field;
+                        const inp = document.getElementById(fId);
+                        if(inp) {
+                            inp.readOnly = true;
+                            inp.classList.add('bg-gray-200');
+                            inp.classList.remove('bg-gray-50', 'ring-2', 'ring-blue-500');
+                        }
+                        b.disabled = false;
+                    });
+                    if(updateSaveChangesButton) updateSaveChangesButton.disabled = true;
+
+                    
+                    if(updateStep1) updateStep1.classList.add('hidden');
+                    if(updateStep2) updateStep2.classList.remove('hidden');
+                    if(updateSuccessBox) updateSuccessBox.classList.add('hidden');
+                    if(updateErrorBox) updateErrorBox.classList.add('hidden');
+
+                } catch (error) {
+                    if(updateFindErrorMessage) updateFindErrorMessage.textContent = error.message;
+                    if(updateFindErrorBox) updateFindErrorBox.classList.remove('hidden');
+                } finally {
+                    if(findUserButton) findUserButton.disabled = false;
+                }
+            }
+
+            function handleUpdateSubmit(event) {
+                event.preventDefault();
+                if (!currentUpdateEId) return;
+
+                const nameInput = document.getElementById('update-name');
+                const phoneInput = document.getElementById('update-phone');
+                const addressInput = document.getElementById('update-address');
+                
+                pendingUpdateData = { eId: currentUpdateEId };
+                let changesMade = false;
+                
+                if (nameInput.value !== nameInput.defaultValue) {
+                    pendingUpdateData.name = nameInput.value;
+                    changesMade = true;
+                }
+                if (phoneInput.value !== phoneInput.defaultValue) {
+                    pendingUpdateData.phone = phoneInput.value;
+                    changesMade = true;
+                }
+                if (addressInput.value !== addressInput.defaultValue) {
+                    pendingUpdateData.address = addressInput.value;
+                    changesMade = true;
+                }
+
+                if (!changesMade) {
+                    if(updateErrorMessage) updateErrorMessage.textContent = "You haven't made any changes.";
+                    if(updateErrorBox) updateErrorBox.classList.remove('hidden');
+                    return;
+                }
+                
+                currentAction = 'update';
+                renderCaptcha("To save your changes, please type the code.");
+                showView('captchaView');
+            }
+
+            async function handleCaptchaVerify() {
+                if (!captchaInput || !verifyCaptchaButton) return;
+
+                if (captchaInput.value.toUpperCase() !== currentCaptcha) {
+                    if (captchaError) captchaError.classList.add('hidden');
+                    renderCaptcha(captchaReason.textContent);
+                    return;
+                }
+
+                if (captchaError) captchaError.classList.add('hidden');
+                verifyCaptchaButton.disabled = true;
+                verifyCaptchaButton.textContent = 'Verifying...';
+
+                try {
+                    if (currentAction === 'register') {
+                        await finalizeRegistration();
+                    } else if (currentAction === 'download') {
+                        finalizeDownload();
+                    } else if (currentAction === 'update') {
+                        await finalizeUpdate();
+                    }
+                } catch (error) {
+                    console.error("Verification failed:", error);
+                } finally {
+                    verifyCaptchaButton.disabled = false;
+                    verifyCaptchaButton.textContent = 'Verify';
+                    currentAction = null;
+                }
+            }
+
+            async function finalizeRegistration() {
+                try {
+                    const response = await fetch(`${API_URL}/register`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(pendingRegistrationData),
+                    });
+                    const result = await response.json();
+                    if (!response.ok) throw new Error(result.message || 'Registration failed.');
+
+                    if (newEIdNumber) newEIdNumber.textContent = result.eId;
+                    if (registerSuccessBox) registerSuccessBox.classList.remove('hidden');
+                    if (registerForm) registerForm.reset();
+                    showView('registerView');
+
+                } catch (error) {
+                    if (registerErrorMessage) registerErrorMessage.textContent = error.message;
+                    if (registerErrorBox) registerErrorBox.classList.remove('hidden');
+                    showView('registerView');
+                } finally {
+                    pendingRegistrationData = null;
+                }
+            }
+
+            function finalizeDownload() {
+                const user = pendingDownloadData;
+                const textContent = `
+E-ID IDENTITY CARD (ELECTRONIC RECORD)
+=======================================
+E-ID NUMBER: ${user.eId}
+ISSUED ON:   ${new Date(user.issued).toLocaleDateString('en-US')}
+NAME:        ${user.name}
+DOB:         ${new Date(user.dob).toLocaleDateString('en-US')}
+GENDER:      ${user.gender}
+CONTACT:     ${user.phone}
+ADDRESS:     ${user.address}
+=======================================
+*** This is a digitally generated document. ***
+                `;
+                const element = document.createElement('a');
+                element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(textContent));
+                element.setAttribute('download', `e-id-${user.eId}.txt`);
+                element.style.display = 'none';
+                document.body.appendChild(element);
+                element.click();
+                document.body.removeChild(element);
+                
+                showView('searchView');
+                pendingDownloadData = null;
+            }
+
+            async function finalizeUpdate() {
+                try {
+                    const response = await fetch(`${API_URL}/update`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(pendingUpdateData),
+                    });
+                    const result = await response.json();
+                    if (!response.ok) throw new Error(result.message || 'Update failed.');
+
+                    if(updateSuccessBox) updateSuccessBox.classList.remove('hidden');
+                    if(updateErrorBox) updateErrorBox.classList.add('hidden');
+                    if(updateStep1) updateStep1.classList.remove('hidden');
+                    if(updateStep2) updateStep2.classList.add('hidden');
+                    const eIdInput = document.getElementById('eid-number-update');
+                    if (eIdInput) eIdInput.value = '';
+                    showView('updateView');
+
+                } catch (error) {
+                    if(updateErrorMessage) updateErrorMessage.textContent = error.message;
+                    if(updateErrorBox) updateErrorBox.classList.remove('hidden');
+                    showView('updateView');
+                } finally {
+                    pendingUpdateData = null;
+                    currentUpdateEId = null;
+                }
+            }
+            
+            // --- Update Form "Edit" Button Logic ---
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const fieldId = btn.dataset.field;
+                    const input = document.getElementById(fieldId);
+                    if (!input) return;
+                    
+                    const isReadOnly = input.readOnly;
+                    
+                    // Lock all fields
+                    document.querySelectorAll('.edit-btn').forEach(b => {
+                        const fId = b.dataset.field;
+                        const inp = document.getElementById(fId);
+                        if(inp) {
+                            inp.readOnly = true;
+                            inp.classList.add('bg-gray-200');
+                            inp.classList.remove('bg-gray-50', 'ring-2', 'ring-blue-500');
+                        }
+                        if(b) b.disabled = false;
+                    });
+                    
+                    // Enable the clicked field
+                    if (isReadOnly) {
+                        input.readOnly = false;
+                        input.classList.remove('bg-gray-200');
+                        input.classList.add('bg-gray-50', 'ring-2', 'ring-blue-500');
+                        input.focus();
+                        btn.disabled = true;
+                        if(updateSaveChangesButton) updateSaveChangesButton.disabled = false;
+                    } else {
+                        // This else block handles clicking "Edit" again to lock it
+                        if(updateSaveChangesButton) updateSaveChangesButton.disabled = true;
+                    }
+                });
+            });
+
+
+            // --- Page Load & Navigation Listeners ---
+            
+            if (navRegister) navRegister.addEventListener('click', () => showView('registerView'));
+            if (navSearch) navSearch.addEventListener('click', () => showView('searchView'));
+            if (navUpdate) navUpdate.addEventListener('click', () => showView('updateView'));
+            if (mainRegisterButton) mainRegisterButton.addEventListener('click', () => showView('registerView'));
+            if (mainUpdateButton) mainUpdateButton.addEventListener('click', () => showView('updateView'));
+            
+            navHomeButtons.forEach(btn => {
+                btn.addEventListener('click', () => showView('homeView'));
+            });
+
+            if (registerForm) registerForm.addEventListener('submit', handleRegisterSubmit);
+            if (searchButton) searchButton.addEventListener('click', handleSearch);
+            if (downloadButton) downloadButton.addEventListener('click', handleDownloadClick);
+            if (findUserButton) findUserButton.addEventListener('click', handleFindUserForUpdate);
+            if (updateForm) updateForm.addEventListener('submit', handleUpdateSubmit);
+            if (refreshCaptcha) refreshCaptcha.addEventListener('click', () => renderCaptcha(captchaReason.textContent));
+            if (verifyCaptchaButton) verifyCaptchaButton.addEventListener('click', handleCaptchaVerify);
+
+            showView('homeView');
+        });
+    </script>
+</body>
+</html>
