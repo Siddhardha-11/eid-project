@@ -1,13 +1,11 @@
-
-
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
 const app = express();
-// --- THIS IS THE DEPLOYMENT FIX ---
+// --- THIS IS THE ONLY CHANGE ---
 const PORT = process.env.PORT || 3000; // Use Render's port, or 3000 for local
-// --- END OF FIX ---
+// --- END OF CHANGE ---
 
 // --- CONFIGURATION ---
 const MONGO_URI = 'mongodb+srv://cs24b012_db_user:tranquility%40123@storage-e-id.joof12t.mongodb.net/eidDatabase?appName=storage-e-id';
