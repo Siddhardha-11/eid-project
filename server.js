@@ -1,11 +1,13 @@
+
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
 const app = express();
-// --- THIS IS THE ONLY CHANGE ---
+// --- THIS IS THE DEPLOYMENT FIX ---
 const PORT = process.env.PORT || 3000; // Use Render's port, or 3000 for local
-// --- END OF CHANGE ---
+// --- END OF FIX ---
 
 // --- CONFIGURATION ---
 const MONGO_URI = 'mongodb+srv://cs24b012_db_user:tranquility%40123@storage-e-id.joof12t.mongodb.net/eidDatabase?appName=storage-e-id';
@@ -168,64 +170,3 @@ mongoose.connect(MONGO_URI)
         console.error('Failed to connect to MongoDB:', error);
         process.exit(1); // Exit the app if DB connection fails
     });
-```
-
-**2. Push Your `eid-backend` to GitHub:**
-
-Render needs to read your code from a repository.
-1.  Go to [GitHub](https://github.com/) and create a **new, private repository** (e.g., `eid-backend`).
-2.  In your terminal, `cd` into your `eid-backend` folder.
-3.  Run these commands to push your code:
-    ```bash
-    git init
-    git add .
-    git commit -m "Prepare for Render deployment"
-    git branch -M main
-    git remote add origin https://github.com/your-username/eid-backend.git
-    git push -u origin main
-    ```
-
----
-
-### Phase 2: Deploy the Backend on Render
-
-1.  Go to **[Render.com](https://render.com/)**, log in with your GitHub account.
-2.  Click **New+** -> **Web Service**.
-3.  Connect the `eid-backend` repository you just created.
-4.  Fill in the settings:
-    * **Name:** `eid-backend` (or any name you like)
-    * **Branch:** `main`
-    * **Start Command:** `npm start`
-    * **Instance Type:** **Free**
-5.  Click **"Create Web Service"**.
-6.  **Wait!** This will take 5-10 minutes. It will install `npm`, run `npm start`, and then say "Your service is live."
-7.  Once it's live, **copy your new public URL** from the top of the Render dashboard. It will look like this:
-    `https://eid-backend-123.onrender.com`
-
----
-
-### Phase 3: The CRITICAL Final Step (Connecting Everything)
-
-Now you have a public frontend and a public backend, but they don't know about each other.
-
-**Step 1: Whitelist Render's IP in MongoDB (CRITICAL)**
-
-1.  Go to your **MongoDB Atlas** dashboard.
-2.  On the left, click **"Network Access"**.
-3.  Click **"Add IP Address"**.
-4.  Click **"ALLOW ACCESS FROM ANYWHERE"** (this adds `0.0.0.0/0`).
-5.  Click **"Confirm"**. This is *required* because your Render server's IP address can change.
-
-
-
-**Step 2: Update Your *Frontend* on Netlify**
-
-1.  On your **local computer**, open your `trail.html` file (or `index.html`, whichever you uploaded to Netlify) in a text editor.
-2.  Go to the `<script>` tag at the very bottom.
-3.  Find this line:
-    ```javascript
-    const API_URL = 'http://localhost:3000/api';
-    ```
-4.  **Change it** to your new public Render URL:
-    ```javascript
-    const API_URL = 'https://eid-backend-123.onrender.com/api';
